@@ -1,4 +1,4 @@
-package ch9;
+package ch9.core;
 
 import java.util.Map;
 
@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.google.gson.JsonObject;
 
-public abstract class ApiRequestTemplate implemets ApiRequest {
+public abstract class ApiRequestTemplate implements ApiRequest {
 	protected Logger logger;
 	
 	protected Map<String, String> reqData;

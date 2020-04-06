@@ -1,4 +1,4 @@
-package ch9;
+package ch9.service;
 
 import java.util.Map;
 
@@ -6,6 +6,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
+import ch9.core.ApiRequestTemplate;
 
 @Service("users")
 @Scope("prototype")

@@ -1,4 +1,4 @@
-package ch9;
+package ch9.core;
 
 import com.google.gson.JsonObject;
 

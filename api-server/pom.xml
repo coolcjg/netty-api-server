@@ -45,7 +45,14 @@
 	    <artifactId>jedis</artifactId>
 	    <version>3.2.0</version>
 	</dependency>
+
 	
+
+	<dependency>
+		<groupId>org.mybatis</groupId>
+		<artifactId>mybatis-spring</artifactId>
+		<version>1.1.1</version>
+	</dependency>
 
 	
 	<dependency>
@@ -58,7 +65,9 @@
 		<groupId>org.apache.logging.log4j</groupId>
 		<artifactId>log4j-api</artifactId>
 		<version>2.3</version>
-	</dependency>		
+	</dependency>
+	
+	
 	
   	
   </dependencies>
