@@ -12,68 +12,66 @@ import com.google.gson.JsonObject;
 
 import ch9.core.ApiRequestTemplate;
 import ch9.core.JedisHelper;
+import ch9.core.KeyMaker;
+import ch9.service.dao.TokenKey;
 import redis.clients.jedis.Jedis;
 
 @Service("tokenIssue")
 @Scope("prototype")
-public class TokenIssue extends ApiRequestTemplate{
-	
-	private static final JedisHelper helper = JedisHelper.getInstance();
-	
-	@Autowired
-	private SqlSession sqlSession;
-	
-	public TokenIssue(Map<String, String> reqData) {
-		super(reqData);
-	}
-	
-	public void requestParamValication() throws RequestParamException{
-		if(StringUtils.isEmpty(this.reqData.get("userNo"))) {
-			throw new RequestParamException("userNoÀÌ ¾ø½À´Ï´Ù.");
-		}
-		
-		if(StringUtils.isEmpty(this.reqData.get("password"))) {
-			throw new RequestPramException("password°¡ ¾ø½À´Ï´Ù.");
-		}
-	}
-	
-	public void service() throws ServiceException{
-		Jedis jedis = null;
-		try {
-			Map<String, Object> result = sqlSession.selectOne("users.userInfoByPassword", this.reqData);
-			
-			if(result !=null) {
-				final long threeHour = 60*60*3;
-				long issueDate = System.currentTimeMillis()/1000;
-				String email = String.valueOf(result.get("USERID"));
-				
-				JsonObject token = new JsonObject();
-				token.addProperty("issueDate", issueDate);
-				token.addProperty("expireDate", issueDate + threeHour);
-				token.addProperty("email", email);
-				token.addProperty("userNo", reqData.get("userNo"));
-				
-				//token ÀúÀå
-				KeyMaker tokenKey = new TokenKey(email, issueDate);
-				jedis = helper.getConnection();
-				jedis.setex(tokenKey.getKey(), threeHour, token.toString());
-				
-				//helper.
-				this.apiResult.addProperty("resultCode", "200");
-				this.apiResult.addProperty("message", "Success");
-				this.apiResult.addProperty("token", tokenKey.getKey());
-			}
-			else {
-				//µ¥ÀÌÅÍ ¾øÀ½
-				this.apiResult.addProperty("resultCode", "404");
-			}
-			helper.returnResource(jedis);
-		}
-		catch(Exception e) {
-			helper.returnResource(jedis);
-		}
-	}
-	
-	
+public class TokenIssue extends ApiRequestTemplate {
+    private static final JedisHelper helper = JedisHelper.getInstance();
 
+    @Autowired
+    private SqlSession sqlSession;
+
+    public TokenIssue(Map<String, String> reqData) {
+        super(reqData);
+    }
+
+    public void requestParamValidation() throws RequestParamException {
+        if (StringUtils.isEmpty(this.reqData.get("userNo"))) {
+            throw new RequestParamException("userNoï¿½ì”  ï¿½ë¾¾ï¿½ë’¿ï¿½ë•²ï¿½ë–.");
+        }
+
+        if (StringUtils.isEmpty(this.reqData.get("password"))) {
+            throw new RequestParamException("passwordåª›ï¿½ ï¿½ë¾¾ï¿½ë’¿ï¿½ë•²ï¿½ë–.");
+        }
+    }
+
+    public void service() throws ServiceException {
+        Jedis jedis = null;
+        try {
+            Map<String, Object> result = sqlSession.selectOne("users.userInfoByPassword", this.reqData);
+
+            if (result != null) {
+                final long threeHour = 60 * 60 * 3;
+                long issueDate = System.currentTimeMillis() / 1000;
+                String email = String.valueOf(result.get("USERID"));
+
+                // token ï§ëš®ë±¾æ¹²ï¿½.
+                JsonObject token = new JsonObject();
+                token.addProperty("issueDate", issueDate);
+                token.addProperty("expireDate", issueDate + threeHour);
+                token.addProperty("email", email);
+                token.addProperty("userNo", reqData.get("userNo"));
+
+                // token ï¿½ï¿½ï¿½ì˜£.
+                KeyMaker tokenKey = new TokenKey(email, issueDate);
+                jedis = helper.getConnection();
+                jedis.setex(tokenKey.getKey(), 60 * 60 * 3, token.toString());
+
+                // helper.
+                this.apiResult.addProperty("resultCode", "200");
+                this.apiResult.addProperty("message", "Success");
+                this.apiResult.addProperty("token", tokenKey.getKey());
+            }
+            else {
+                // ï¿½ëœ²ï¿½ì” ï¿½ê½£ ï¿½ë¾¾ï¿½ì“¬.
+                this.apiResult.addProperty("resultCode", "404");
+            }
+        }
+        catch (Exception e) {
+            helper.returnResource(jedis);
+        }
+    }
 }
